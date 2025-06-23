@@ -5,6 +5,7 @@ import { Input } from '../ui/input'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 const Login=()=> {
     const [input,setInput]=useState({
@@ -19,7 +20,11 @@ const Login=()=> {
    
     const submitHandler=async(e)=>{
         e.preventDefault();
-        console.log(input);
+        try{
+            const res=await axios.post()
+        }catch(error){
+            console.log(error);
+        }
     }
     return (
         <div>
