@@ -6,40 +6,45 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
 
-function Login() {
+const Login=()=> {
     const [input,setInput]=useState({
-        fullname:"",
         email:"",
-        phoneNumber:"",
         password:"",
         role:"",
-        file:""
+        
     });
     const changeEventHandler=(e)=>{
-        setInput({...input,[e.target.name]:e.targer.value});
+        setInput({...input,[e.target.name]:e.target.value});
     }
-    const changeFileHandler=(e)=>{
-        setInput({...input,file:e.target.files?.[0]});
+   
+    const submitHandler=async(e)=>{
+        e.preventDefault();
+        console.log(input);
     }
-    
     return (
         <div>
             <Navbar />
             <div className='flex items-center justify-center max-w-7xl mx-auto'>
-                <form className='w-1/2 border border-gray-300 rounded-lg  p-6 my-10'>
+                <form onSubmit={submitHandler} className='w-1/2 border border-gray-300 rounded-lg  p-6 my-10'>
                     <h1 className='font-bold text-xl mb-5'>Login</h1>
                   
                     <div className='my-2'>
                         <Label>Email</Label>
                         <Input
                             type="email"
+                            value={input.email}
+                            name="email"
+                            onChange={changeEventHandler}
                             placeholder="abc@gmail.com"
                         />
                     </div>
                     <div className='my-2'>
                         <Label>Password</Label>
                         <Input
-                            type="text"
+                            type="password"
+                            value={input.password}
+                            name="password"
+                            onChange={changeEventHandler}
                             placeholder="password"
                         />
                     </div>
@@ -50,15 +55,19 @@ function Login() {
                                     type="radio"
                                     name="role"
                                     value="student"
+                                    checked={input.role=='student'}
+                                    onChange={changeEventHandler}
                                     className="cursor-pointer"
                                 />
                                 <Label htmlFor="option-one">Student</Label>
                             </div>
                             <div className="flex items-center space-x-2">
-                                 <Input
+                                <Input
                                     type="radio"
                                     name="role"
                                     value="recruiter"
+                                    checked={input.role=='recruiter'}
+                                    onChange={changeEventHandler}
                                     className="cursor-pointer"
                                 />
                                 <Label htmlFor="option-two">Recruiter</Label>
