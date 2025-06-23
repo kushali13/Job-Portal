@@ -110,5 +110,4 @@ function Signup() {
         </div>
     )
 }
-Hello
 export default Signup
