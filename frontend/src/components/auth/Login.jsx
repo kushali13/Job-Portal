@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setLoading } from '@/redux/authSlice'
 import store from '@/redux/store'
 import { Loader2 } from 'lucide-react'
+
 const Login=()=> {
     const [input,setInput]=useState({
         email:"",
