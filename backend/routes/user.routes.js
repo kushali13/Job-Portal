@@ -2,8 +2,13 @@ import express from "express";
 import { login,logout, register, updateProfile } from "../controllers/user.controller.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 import { singleUpload } from "../middlewares/multer.js";
+import multer from 'multer';
+
+const storage = multer.memoryStorage(); // or diskStorage if saving locally
+const upload = multer({ storage });
 
 const router=express.Router();
+router.post('/profile/update', isAuthenticated, upload.single('file'), updateProfile);
 
 router.route("/register").post(singleUpload,register);
 router.route("/login").post(login);
