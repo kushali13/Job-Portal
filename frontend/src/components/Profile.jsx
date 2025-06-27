@@ -8,12 +8,14 @@ import { Badge } from './ui/badge';
 import { Label } from './ui/label';
 import AppliedJobTable from './AppliedJobTable';
 import UpdateProfileDialog from './UpdateProfileDialog';
+import { useSelector } from 'react-redux';
 
 const isResume=true;
-const skills = ["Python", "Django", "HTML", "CSS"];
-
+//const skills = ["Python", "Django", "HTML", "CSS"];
 const Profile = () => {
     const [open, setOpen] = useState(false);
+    const {user}=useSelector(store=>store.auth);
+
   return (
     <div>
       <Navbar />
@@ -24,8 +26,8 @@ const Profile = () => {
               <AvatarImage src="https://static.vecteezy.com/system/resources/previews/047/656/219/non_2x/abstract-logo-design-for-any-corporate-brand-business-company-vector.jpg" />
             </Avatar>
             <div>
-              <h1 className='font-medium text-xl'>Full Name</h1>
-              <p>Your Description</p>
+              <h1 className='font-medium text-xl'>{user?.fullname}</h1>
+              <p>{user?.profile?.bio}</p>
             </div>
           </div>
           <Button onClick={() => setOpen(true)} className="text-right" variant="outline"><Pen /></Button>        </div>
@@ -33,11 +35,11 @@ const Profile = () => {
         <div className='my-5'>
           <div className='flex items-center gap-3 my-2'>
             <Mail />
-            <span>abc@gmail.com</span>
+            <span>{user?.email}</span>
           </div>
           <div className='flex items-center gap-3 my-2'>
             <Contact />
-            <span>1234567890</span>
+            <span>{user?.phoneNumber}</span>
           </div>
         </div>
 
@@ -45,8 +47,8 @@ const Profile = () => {
           <h1 className='mb-2 font-medium'>Skills</h1>
           <div className="flex flex-wrap gap-1">
             {
-              skills.length !== 0
-                ? skills.map((item, index) => (
+              user?.profile?.skills.length !== 0
+                ? user?.profile?.skills.map((item, index) => (
                     <Badge key={index}>{item}</Badge>
                 
                 ))
@@ -57,7 +59,7 @@ const Profile = () => {
         <div className='grid w-full max-w-sm items-center gap-1.5'>
             <Label className='text-md font-bold'>Resume</Label>
             {
-                isResume? <a target="blank" href="https://www.google.com" className='text-blue-500 w-full hover:underline cursor-pointer'>Resume Link</a>:<span>NA</span>
+                isResume? <a target="blank" href={`${user.profile.resume}#toolbar=0`}  rel="noopener noreferrer" className='text-blue-500 w-full hover:underline cursor-pointer'>{user?.profile?.resumeOriginalName}</a>:<span>NA</span>
             }
         </div>
         

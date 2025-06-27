@@ -1,6 +1,8 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
     try {
@@ -92,28 +94,44 @@ export const login = async (req, res) => {
     }
 }
 export const logout = async (req, res) => {
-    try {
-        return res.status(200).cookie("token", token, { maxAge:0}).json({
-            message:"Logout Successfully",
-            success: true
-        })
-    }
-    catch (error) {
-        console.log(error);
-    }
-}
+  try {
+    return res
+      .status(200)
+      .cookie("token", "", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        expires: new Date(0),
+      })
+      .json({
+        message: "Logout Successfully",
+        success: true,
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error during logout",
+      success: false,
+    });
+  }
+};
 export const updateProfile = async (req, res) => {
     try {
         const { fullname, email, phoneNumber,bio,skills } = req.body;
         const file=req.file;
+        const fileUri=getDataUri(file);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+            resource_type: "raw", // Important for PDF/docx/etc.
+            folder: 'resumes',
+        });
+        console.log(cloudResponse);
         if (!fullname || !email || !phoneNumber || !bio || !skills) {
             return res.status(400).json({
                 message: "Something is missing",
                 success: false
             });
         };
-        // cloudinary here
-
+        
         let skillsArray;
         if(skills){
             skillsArray=skills.split(",");
@@ -135,7 +153,11 @@ export const updateProfile = async (req, res) => {
         if(skills)  user.profile.skills=skillsArray
 
 
-        //resume comes later here
+        //resume 
+        if(cloudResponse){
+            user.profile.resume=cloudResponse.secure_url
+            user.profile.resumeOriginalName=file.originalname
+        }
 
         await user.save();
 
