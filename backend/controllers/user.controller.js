@@ -3,43 +3,66 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
-
 export const register = async (req, res) => {
-    try {
-        console.log(req.body);
+  try {
+    console.log(req.body);
+    const { fullname, email, phoneNumber, password, role } = req.body;
+    
+    if (!fullname || !email || !phoneNumber || !password || !role) {
+      return res.status(400).json({
+        message: "Something is missing",
+        success: false,
+      });
+    }
 
-        const { fullname, email, phoneNumber, password, role } = req.body;
-        if (!fullname || !email || !phoneNumber || !password || !role) {
-            return res.status(400).json({
-                message: "Something is missing",
-                success: false
-            });
-        };
-        const user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({
-                message: "User already exists",
-                success: false
-            });
-        };
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await User.create({
-            fullname,
-            email,
-            phoneNumber,
-            password: hashedPassword,
-            role,
-        });
-       console.log("Account cres=ated");
-        return res.status(201).json({
-            message: "Account Created Successfully",
-            success: true
-        });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists",
+        success: false,
+      });
     }
-    catch (error) {
-        console.log(error);
+
+    let profilePhotoUrl = "";
+    const file = req.file;
+
+    if (file) {
+        const fileUri = getDataUri(file); // ✅ only if file is available
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+            resource_type: 'image',
+            folder: 'avatars', // optional
+        });
+        console.log("Cloudinary URL:", cloudResponse.secure_url);
+        profilePhotoUrl = cloudResponse.secure_url;
     }
-}
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.create({
+      fullname,
+      email,
+      phoneNumber,
+      password: hashedPassword,
+      role,
+      profile: {
+        profilePhoto: profilePhotoUrl,
+      },
+    });
+
+    console.log("Account created");
+    return res.status(201).json({
+      message: "Account Created Successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
+  }
+};
+
 export const login = async (req, res) => {
     try {
         const { email, password, role } = req.body;

@@ -10,10 +10,12 @@ import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant'
 import { setUser } from '@/redux/authSlice'
 const Navbar = () => {
-   
+
     const {user}=useSelector(store=>store.auth);
     const dispatch=useDispatch();
     const navigate=useNavigate();
+    console.log(user?.profile?.profilePhoto);
+
     const logoutHandler=async()=>{
         try{
             const res=await axios.get(`${USER_API_END_POINT}/logout`,{withCredentials:true});
@@ -51,18 +53,18 @@ const Navbar = () => {
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Avatar className="w-10 h-10 cursor-pointer">
-                                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" className="w-full h-full rounded-full" />
+                                        <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" className="w-full h-full rounded-full" />
                                     </Avatar>
                                 </PopoverTrigger>
                                 <PopoverContent className="bg-white border p-4 rounded shadow w-80">
                                     <div className=''>
                                         <div className='flex gap-4 space-y-2'>
                                             <Avatar className="w-10 h-10 cursor-pointer">
-                                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" className="w-full h-full rounded-full" />
+                                                <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" className="w-full h-full rounded-full" />
                                             </Avatar>
                                             <div>
-                                                <h4 className='font-medium'>Kushali Sanghvi</h4>
-                                                <p className='text-sm text-muted-foreground'>Web Developer</p>
+                                                <h4 className='font-medium'>{user?.fullname}</h4>
+                                                <p className='text-sm text-muted-foreground'>{user?.profile?.bio}</p>
                                             </div>
                                         </div>
                                         <div className='flex flex-col my-2 text-gray-600'>

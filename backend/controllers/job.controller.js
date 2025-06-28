@@ -20,7 +20,7 @@ export const postJob = async (req, res) => {
             salary: Number(salary),
             location,
             jobType,
-            experienceLevel: experience,
+            experience: experience,
             position,
             company: companyId,
             created_by: userId
@@ -32,6 +32,11 @@ export const postJob = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
 }
 // student k liye
