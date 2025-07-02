@@ -1,33 +1,33 @@
 import jwt from "jsonwebtoken";
-import express from "express";
 
-import cookieParser from "cookie-parser";
-const app=express();
-
-const isAuthenticated=async(req,res,next)=>{
-    try{
-        app.use(cookieParser());
-
+const isAuthenticated = async (req, res, next) => {
+    try {
         const token = req.cookies.token;
-        const decode = jwt.verify(token, "kushali");
-
-        if(!token){
+        if (!token) {
             return res.status(401).json({
-                message:"User not Authenticate",
-                success:false
-            })
+                message: "User not authenticated",
+                success: false,
+            });
         }
-        if(!decode){
+
+        const decode = jwt.verify(token, process.env.SECRET_KEY); // no need for await here
+        if (!decode) {
             return res.status(401).json({
-                message:"Invalid token",
-                success:false
-            })
-        };
-        req.id=decode.userId;
+                message: "Invalid token",
+                success: false,
+            });
+        }
+
+        req.id = decode.userId;
         next();
+    } catch (error) {
+        console.log("JWT Auth Error:", error.message);
+        return res.status(401).json({
+            message: "Authentication failed",
+            success: false,
+            error: error.message,
+        });
     }
-    catch(error){
-        console.log(error);
-    }
-}
+};
+
 export default isAuthenticated;
