@@ -9,6 +9,15 @@ import axios from 'axios';
 
 const shortlistingStatus = ["Accepted", "Rejected"];
 
+const BACKEND_URL = "http://localhost:8000";
+const getResumeUrl = (resumePath) => {
+  if (!resumePath) return undefined;
+  if (resumePath.startsWith('/uploads/')) {
+    return BACKEND_URL + resumePath;
+  }
+  return resumePath;
+};
+
 const ApplicantsTable = () => {
     const { applicants } = useSelector(store => store.application);
 
@@ -49,7 +58,7 @@ const ApplicantsTable = () => {
                                 <TableCell>{item?.applicant?.phoneNumber}</TableCell>
                                 <TableCell >
                                     {
-                                        item.applicant?.profile?.resume ? <a className="text-blue-600 cursor-pointer" href={item?.applicant?.profile?.resume} target="_blank" rel="noopener noreferrer">{item?.applicant?.profile?.resumeOriginalName}</a> : <span>NA</span>
+                                        item.applicant?.profile?.resume ? <a className="text-blue-600 cursor-pointer" href={getResumeUrl(item?.applicant?.profile?.resume)} target="_blank" rel="noopener noreferrer">{item?.applicant?.profile?.resumeOriginalName}</a> : <span>NA</span>
                                     }
                                 </TableCell>
                                 <TableCell>{item?.applicant.createdAt.split("T")[0]}</TableCell>

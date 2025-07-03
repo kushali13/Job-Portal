@@ -11,6 +11,15 @@ import UpdateProfileDialog from './UpdateProfileDialog';
 import { useSelector } from 'react-redux';
 import useGetAppliedJobs from '@/hooks/useGetAppliedJobs';
 
+const BACKEND_URL = "http://localhost:8000";
+const getResumeUrl = (resumePath) => {
+  if (!resumePath) return undefined;
+  if (resumePath.startsWith('/uploads/')) {
+    return BACKEND_URL + resumePath;
+  }
+  return resumePath;
+};
+
 const isResume=true;
 //const skills = ["Python", "Django", "HTML", "CSS"];
 const Profile = () => {
@@ -61,7 +70,7 @@ const Profile = () => {
         <div className='grid w-full max-w-sm items-center gap-1.5'>
             <Label className='text-md font-bold'>Resume</Label>
             {
-                isResume? <a target="blank" href={`${user.profile.resume}#toolbar=0`}  rel="noopener noreferrer" className='text-blue-500 w-full hover:underline cursor-pointer'>{user?.profile?.resumeOriginalName}</a>:<span>NA</span>
+                isResume? <a target="_blank" href={`${getResumeUrl(user.profile.resume)}#toolbar=0`}  rel="noopener noreferrer" className='text-blue-500 w-full hover:underline cursor-pointer'>{user?.profile?.resumeOriginalName}</a>:<span>NA</span>
             }
         </div>
         

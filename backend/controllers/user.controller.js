@@ -1,8 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import getDataUri from "../utils/datauri.js";
-import cloudinary from "../utils/cloudinary.js";
+
 export const register = async (req, res) => {
   try {
     console.log(req.body);
@@ -25,15 +24,9 @@ export const register = async (req, res) => {
 
     let profilePhotoUrl = "";
     const file = req.file;
-
     if (file) {
-        const fileUri = getDataUri(file); // ✅ only if file is available
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-            resource_type: 'image',
-            folder: 'avatars', // optional
-        });
-        console.log("Cloudinary URL:", cloudResponse.secure_url);
-        profilePhotoUrl = cloudResponse.secure_url;
+        // Save local file path relative to /uploads
+        profilePhotoUrl = `/uploads/${file.filename}`;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -140,14 +133,8 @@ export const logout = async (req, res) => {
 };
 export const updateProfile = async (req, res) => {
     try {
-        const { fullname, email, phoneNumber,bio,skills } = req.body;
-        const file=req.file;
-        const fileUri=getDataUri(file);
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-            resource_type: "raw", // Important for PDF/docx/etc.
-            folder: 'resumes',
-        });
-        console.log(cloudResponse);
+        const { fullname, email, phoneNumber, bio, skills } = req.body;
+        const file = req.file;
         if (!fullname || !email || !phoneNumber || !bio || !skills) {
             return res.status(400).json({
                 message: "Something is missing",
@@ -175,11 +162,10 @@ export const updateProfile = async (req, res) => {
         if(bio)  user.profile.bio=bio
         if(skills)  user.profile.skills=skillsArray
 
-
-        //resume 
-        if(cloudResponse){
-            user.profile.resume=cloudResponse.secure_url
-            user.profile.resumeOriginalName=file.originalname
+        // If a file is uploaded, treat as resume (or profile photo as needed)
+        if(file){
+            user.profile.resume = `/uploads/${file.filename}`;
+            user.profile.resumeOriginalName = file.originalname;
         }
 
         await user.save();
@@ -198,8 +184,11 @@ export const updateProfile = async (req, res) => {
             user,
             success: true
         })
-    }
-    catch (error) {
+    } catch (error) {
         console.log(error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false
+        });
     }
 }

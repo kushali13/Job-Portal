@@ -1,4 +1,3 @@
-
 import { Job } from "../models/job.model.js";
 
 // admin post krega job
@@ -39,6 +38,50 @@ export const postJob = async (req, res) => {
         });
     }
 }
+
+export const updateJob = async (req, res) => {
+    try {
+        const { title, description, requirements, salary, location, jobType, experience, position, companyId } = req.body;
+        const jobId = req.params.id;
+        if (!title || !description || !requirements || !salary || !location || !jobType || !experience || !position || !companyId) {
+            return res.status(400).json({
+                message: "Something is missing.",
+                success: false
+            });
+        }
+        const updateData = {
+            title,
+            description,
+            requirements: requirements.split ? requirements.split(",") : requirements,
+            salary: Number(salary),
+            location,
+            jobType,
+            experience,
+            position,
+            company: companyId
+        };
+        const job = await Job.findByIdAndUpdate(jobId, updateData, { new: true });
+        if (!job) {
+            return res.status(404).json({
+                message: "Job not found.",
+                success: false
+            });
+        }
+        return res.status(200).json({
+            message: "Job updated successfully.",
+            job,
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}
+
 // student k liye
 export const getAllJobs = async (req, res) => {
     try {
@@ -106,3 +149,21 @@ export const getAdminJobs = async (req, res) => {
         console.log(error);
     }
 }
+
+export const getAllRoles = async (req, res) => {
+  try {
+    const roles = await Job.distinct("jobType");
+    res.status(200).json({ roles, success: true });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", success: false });
+  }
+};
+
+export const getAllSalaries = async (req, res) => {
+  try {
+    const salaries = await Job.distinct("salary");
+    res.status(200).json({ salaries, success: true });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", success: false });
+  }
+};

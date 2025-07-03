@@ -29,6 +29,10 @@ export const registerCompany= async(req,res)=>{
     }
     catch(error){
         console.log(error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false
+        });
     }
 }
 
@@ -49,6 +53,10 @@ export const getCompany=async(req,res)=>{
     }
     catch(error){
         console.log(error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false
+        });
     }
 }
 export const getCompanyById=async(req,res)=>{
@@ -68,20 +76,22 @@ export const getCompanyById=async(req,res)=>{
     }
     catch(error){
         console.log(error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false
+        });
     }
 }
 export const UpdateCompany=async(req,res)=>{
     try{
         const {name,description,website,location}=req.body;
         const file=req.file;
-        
-        //cloudinary
-        const fileUri=getDataUri(file);
-        const cloudResponse= await cloudinary.uploader.upload(fileUri.content);
-        const logo=cloudResponse.secure_url;
-        
-
-        const updateData={name,description,website,location,logo}
+        let logo;
+        if (file) {
+            logo = `/uploads/${file.filename}`;
+        }
+        const updateData={name,description,website,location};
+        if (logo) updateData.logo = logo;
         const company=await Company.findByIdAndUpdate(req.params.id,updateData,{new:true});
         if(!company){ 
             return res.status(400).json({
@@ -97,5 +107,18 @@ export const UpdateCompany=async(req,res)=>{
     }
     catch(error){
         console.log(error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false
+        });
     }
 }
+
+export const getAllLocations = async (req, res) => {
+  try {
+    const locations = await Company.distinct("location");
+    res.status(200).json({ locations, success: true });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", success: false });
+  }
+};

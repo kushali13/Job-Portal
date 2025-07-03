@@ -9,6 +9,16 @@ import { toast } from 'sonner'
 import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant'
 import { setUser } from '@/redux/authSlice'
+
+const BACKEND_URL = "http://localhost:8000";
+const getProfilePhotoUrl = (photoPath) => {
+  if (!photoPath) return undefined;
+  if (photoPath.startsWith('/uploads/')) {
+    return BACKEND_URL + photoPath;
+  }
+  return photoPath;
+};
+
 const Navbar = () => {
 
     const { user } = useSelector(store => store.auth);
@@ -64,14 +74,14 @@ const Navbar = () => {
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Avatar className="w-10 h-10 cursor-pointer">
-                                        <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" className="w-full h-full rounded-full" />
+                                        <AvatarImage src={getProfilePhotoUrl(user?.profile?.profilePhoto)} alt="@shadcn" className="w-full h-full rounded-full" />
                                     </Avatar>
                                 </PopoverTrigger>
                                 <PopoverContent className="bg-white border p-4 rounded shadow w-80">
                                     <div className=''>
                                         <div className='flex gap-4 space-y-2'>
                                             <Avatar className="w-10 h-10 cursor-pointer">
-                                                <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" className="w-full h-full rounded-full" />
+                                                <AvatarImage src={getProfilePhotoUrl(user?.profile?.profilePhoto)} alt="@shadcn" className="w-full h-full rounded-full" />
                                             </Avatar>
                                             <div>
                                                 <h4 className='font-medium'>{user?.fullname}</h4>

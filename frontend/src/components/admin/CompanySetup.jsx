@@ -24,6 +24,7 @@ const CompanySetup = () => {
     const {singleCompany} = useSelector(store=>store.company);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [locations, setLocations] = useState([]);
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
@@ -58,7 +59,11 @@ const CompanySetup = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(
+                error?.response?.data?.message ||
+                error?.message ||
+                "Something went wrong"
+            );
         } finally {
             setLoading(false);
         }
@@ -73,6 +78,13 @@ const CompanySetup = () => {
             file: singleCompany.file || null
         })
     },[singleCompany]);
+
+    useEffect(() => {
+        axios.get(`${COMPANY_API_END_POINT}/locations`, { withCredentials: true })
+            .then(res => {
+                if (res.data.success) setLocations(res.data.locations);
+            });
+    }, []);
 
     return (
         <div>
@@ -116,12 +128,17 @@ const CompanySetup = () => {
                         </div>
                         <div>
                             <Label>Location</Label>
-                            <Input
-                                type="text"
+                            <select
                                 name="location"
                                 value={input.location}
                                 onChange={changeEventHandler}
-                            />
+                                className="border rounded px-2 py-1 w-full"
+                            >
+                                <option value="">Select a location</option>
+                                {locations.map(loc => (
+                                    <option key={loc} value={loc}>{loc}</option>
+                                ))}
+                            </select>
                         </div>
                         <div>
                             <Label>Logo</Label>

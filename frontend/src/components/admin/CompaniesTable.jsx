@@ -6,6 +6,15 @@ import { Edit2, MoreHorizontal } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
+const BACKEND_URL = "http://localhost:8000";
+const getLogoUrl = (logoPath) => {
+  if (!logoPath) return undefined;
+  if (logoPath.startsWith('/uploads/')) {
+    return BACKEND_URL + logoPath;
+  }
+  return logoPath;
+};
+
 const CompaniesTable = () => {
     const { companies, searchCompanyByText } = useSelector(store => store.company);
     const [filterCompany, setFilterCompany] = useState(companies);
@@ -38,7 +47,7 @@ const CompaniesTable = () => {
                             <tr>
                                 <TableCell>
                                     <Avatar>
-                                        <AvatarImage src={company.logo}/>
+                                        <AvatarImage src={getLogoUrl(company.logo)}/>
                                     </Avatar>
                                 </TableCell>
                                 <TableCell>{company.name}</TableCell>

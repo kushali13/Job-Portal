@@ -6,6 +6,15 @@ import { Badge } from './ui/badge'
 import { useNavigate } from 'react-router-dom'
 import { mongo } from 'globals'
 
+const BACKEND_URL = "http://localhost:8000";
+const getLogoUrl = (logoPath) => {
+  if (!logoPath) return undefined;
+  if (logoPath.startsWith('/uploads/')) {
+    return BACKEND_URL + logoPath;
+  }
+  return logoPath;
+};
+
 const Job = ({job}) => {
     const navigate=useNavigate();
     //const jobId="abcdefgh";
@@ -24,7 +33,7 @@ const Job = ({job}) => {
             <div className='flex items-center gap-2 my-2'>
                 <Button className='bg-white hover:bg-white p-6' variant="outline" size="icon">
                     <Avatar >
-                        <AvatarImage src={job?.company?.logo} />
+                        <AvatarImage src={getLogoUrl(job?.company?.logo)} />
                     </Avatar>
                 </Button>
                 <div>
