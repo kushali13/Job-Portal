@@ -1,0 +1,12 @@
+# Firebase Admin SDK service account key
+backend/utils/serviceAccountKey.json
+
+# Environment variables
+.env
+backend/.env
+frontend/.env
+
+# Node modules
+node_modules/
+backend/node_modules/
+frontend/node_modules/ 

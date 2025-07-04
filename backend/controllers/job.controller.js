@@ -86,12 +86,17 @@ export const updateJob = async (req, res) => {
 export const getAllJobs = async (req, res) => {
     try {
         const keyword = req.query.keyword || "";
-        const query = {
-            $or: [
-                { title: { $regex: keyword, $options: "i" } },
-                { description: { $regex: keyword, $options: "i" } },
-            ]
-        };
+        const orQuery = [
+            { title: { $regex: keyword, $options: "i" } },
+            { description: { $regex: keyword, $options: "i" } },
+            { location: { $regex: keyword, $options: "i" } },
+            { jobType: { $regex: keyword, $options: "i" } }
+        ];
+        // If the keyword is a number, also search salary
+        if (!isNaN(Number(keyword)) && keyword !== "") {
+            orQuery.push({ salary: Number(keyword) });
+        }
+        const query = { $or: orQuery };
         const jobs = await Job.find(query).populate({
             path: "company"
         }).sort({ createdAt: -1 });

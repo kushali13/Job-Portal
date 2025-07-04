@@ -128,17 +128,13 @@ const CompanySetup = () => {
                         </div>
                         <div>
                             <Label>Location</Label>
-                            <select
+                            <Input
+                                type="text"
                                 name="location"
                                 value={input.location}
                                 onChange={changeEventHandler}
-                                className="border rounded px-2 py-1 w-full"
-                            >
-                                <option value="">Select a location</option>
-                                {locations.map(loc => (
-                                    <option key={loc} value={loc}>{loc}</option>
-                                ))}
-                            </select>
+                                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                            />
                         </div>
                         <div>
                             <Label>Logo</Label>

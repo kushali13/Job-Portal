@@ -4,19 +4,14 @@ import { useNavigate } from "react-router-dom";
 
 const ProtectedRoute = ({children}) => {
     const {user} = useSelector(store=>store.auth);
-
     const navigate = useNavigate();
 
     useEffect(()=>{
-        if(user === null || user.role !== 'recruiter'){
-            navigate("/");
+        if(!user){
+            navigate("/login");
         }
-    },[]);
+    },[user, navigate]);
 
-    return (
-        <>
-        {children}
-        </>
-    )
+    return user ? children : null;
 };
 export default ProtectedRoute;

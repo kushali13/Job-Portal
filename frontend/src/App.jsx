@@ -15,6 +15,9 @@ import PostJob from './components/admin/PostJob'
 import Applicants from './components/admin/Applicants'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import EditJob from './components/admin/EditJob'
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchUser } from './redux/authSlice';
 
 
 const appRouter = createBrowserRouter([
@@ -32,15 +35,15 @@ const appRouter = createBrowserRouter([
   },
   {
     path: "/jobs",
-    element: <Jobs />
+    element: <ProtectedRoute><Jobs /></ProtectedRoute>
   },
   {
     path: "/description/:id",
-    element: <JobDescription />
+    element: <ProtectedRoute><JobDescription /></ProtectedRoute>
   },
   {
     path: "/browse",
-    element: <Browse />
+    element: <ProtectedRoute><Browse /></ProtectedRoute>
   },
   {
     path: "/profile",
@@ -77,7 +80,10 @@ const appRouter = createBrowserRouter([
   },
 ])
 function App() {
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
   return (
     <div>
       <RouterProvider router={appRouter} />

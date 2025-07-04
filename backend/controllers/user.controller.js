@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import admin from "../utils/firebaseAdmin.js";
 
 export const register = async (req, res) => {
   try {
@@ -192,3 +193,45 @@ export const updateProfile = async (req, res) => {
         });
     }
 }
+
+export const googleLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { name, email, picture, uid } = decodedToken;
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({
+        fullname: name,
+        email,
+        profile: { profilePhoto: picture }
+      });
+    }
+    // Create JWT token and set cookie
+    const tokenData = { userId: user._id };
+    const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' });
+    res.cookie("token", token, {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: "strict",
+      // secure: true, // use in production with HTTPS
+    });
+    res.status(200).json({ user, success: true });
+  } catch (error) {
+    res.status(401).json({ message: "Invalid Google token", success: false });
+  }
+};
+
+export const me = async (req, res) => {
+  try {
+    const userId = req.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+    res.status(200).json({ user, success: true });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", success: false });
+  }
+};

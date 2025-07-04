@@ -11,6 +11,8 @@ import { toast } from 'sonner'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading, setUser } from '@/redux/authSlice'
 import { Loader2 } from 'lucide-react'
+import { auth, googleProvider } from "@/lib/firebase";
+import { signInWithPopup } from "firebase/auth";
 
 const Login = () => {
     const [input, setInput] = useState({
@@ -48,6 +50,28 @@ const Login = () => {
             dispatch(setLoading(false));
         }
     }
+
+    const handleGoogleSignIn = async () => {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            const idToken = await user.getIdToken();
+
+            // Send the token to your backend
+            const res = await axios.post("http://localhost:8000/api/v1/user/google-login", { idToken }, { withCredentials: true });
+            if (res.data.success) {
+                dispatch(setUser(res.data.user)); // Store user in Redux
+                toast.success("Logged in with Google!");
+                navigate("/");
+            } else {
+                toast.error(res.data.message || "Google login failed");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message || "Google sign-in failed");
+        }
+    };
+
     useEffect(()=>{
         if(user){
             navigate("/");
@@ -109,6 +133,7 @@ const Login = () => {
                     {
                         loading ? <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : <Button type="submit" className="w-full my-4">Login</Button>
                     }
+                    <Button type="button" onClick={handleGoogleSignIn} className="w-full my-2 bg-red-500 hover:bg-red-600">Sign in with Google</Button>
                     <span className='text-sm'>Don't have an account? <Link to="/signup" className='text-blue-600'>Signup</Link></span>
                 </form>
             </div>

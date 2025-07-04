@@ -77,7 +77,7 @@ const Navbar = () => {
                                         <AvatarImage src={getProfilePhotoUrl(user?.profile?.profilePhoto)} alt="@shadcn" className="w-full h-full rounded-full" />
                                     </Avatar>
                                 </PopoverTrigger>
-                                <PopoverContent className="bg-white border p-4 rounded shadow w-80">
+                                <PopoverContent className="bg-white border p-4 rounded shadow w-80 z-[100]" sideOffset={12}>
                                     <div className=''>
                                         <div className='flex gap-4 space-y-2'>
                                             <Avatar className="w-10 h-10 cursor-pointer">

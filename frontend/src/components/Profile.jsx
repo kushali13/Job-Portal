@@ -20,6 +20,14 @@ const getResumeUrl = (resumePath) => {
   return resumePath;
 };
 
+const getProfilePhotoUrl = (photoPath) => {
+  if (!photoPath) return undefined;
+  if (photoPath.startsWith('/uploads/')) {
+    return BACKEND_URL + photoPath;
+  }
+  return photoPath;
+};
+
 const isResume=true;
 //const skills = ["Python", "Django", "HTML", "CSS"];
 const Profile = () => {
@@ -34,7 +42,7 @@ const Profile = () => {
         <div className='flex justify-between'>
           <div className='flex items-center gap-4'>
             <Avatar className='h-24 w-24'>
-              <AvatarImage src="https://static.vecteezy.com/system/resources/previews/047/656/219/non_2x/abstract-logo-design-for-any-corporate-brand-business-company-vector.jpg" />
+              <AvatarImage src={getProfilePhotoUrl(user?.profile?.profilePhoto)} />
             </Avatar>
             <div>
               <h1 className='font-medium text-xl'>{user?.fullname}</h1>
